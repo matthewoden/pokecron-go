@@ -15,7 +15,7 @@ const getDirections = (destination) =>
 
 const pokemonIdAndLocation = (p) => {
   const initialExpires = longToInt(p.expiration_timestamp_ms)
-  const finalExpires = initialExpires < new Date().getTime() ? moment().add(15, 'minutes').unix() : initialExpires;
+  const finalExpires = initialExpires < new Date().getTime() ? moment().add(15, 'minutes').unix()*1000 : initialExpires;
   console.log(finalExpires)
   return {
     encounter_id: longToInt(p.encounter_id),
