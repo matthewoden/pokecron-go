@@ -14,14 +14,16 @@ const getDirections = (destination) =>
     `https://www.google.com/maps/dir/Current+Location/${destination.latitude},${destination.longitude}?dirflg=w`
 
 const pokemonIdAndLocation = (p) => {
-  const expires = longToInt(p.expiration_timestamp_ms)
+  const initialExpires = longToInt(p.expiration_timestamp_ms)
+  const finalExpires = initialExpires < new Date().getTime() ? moment().add(15, 'minutes').unix() : initialExpires;
+  console.log(finalExpires)
   return {
     encounter_id: longToInt(p.encounter_id),
     id: p.pokemon_id,
     latitude:p.latitude,
     longitude: p.longitude,
-    expires: expires,
-    expiresString: moment(expires).fromNow()
+    expires: finalExpires,
+    expiresString: moment(finalExpires).fromNow()
   }
 }
 
@@ -31,14 +33,16 @@ const getNearbyPokemon = (latitude, longitude) =>
     .then(() => api.location.set('coordinates', latitude, longitude))
     .then(api.getPlayerEndpoint)
     .then(api.mapData.getNearby)
-    .then((nearbyItems) =>
-      nearbyItems
+    .then((nearbyItems) => {
+      return nearbyItems
         .map(item => item.catchable_pokemon.map(pokemonIdAndLocation))
         .reduce((a, b) => [].concat(a).concat(b))
         .map(item => {
           const directions = getDirections({ latitude: item.latitude, longitude: item.longitude })
           const name = _.find(pokemon, { id: item.id.toString() }).name
           return _.extend({}, item, { name, directions })
-        }))
+        })
+    })
+
 
 module.exports = { getNearbyPokemon }
