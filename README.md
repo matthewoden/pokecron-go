@@ -24,6 +24,3 @@ It's pretty simple to get going.
  - Tests.
  - Convert task to Lambda Function (VM?)
  - Or use some kind of cron module that takes cron expressions?
-
-
-## Issues - sometimes, the expiration time is -1, and it just hangs. Working on that.
