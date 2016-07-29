@@ -24,6 +24,7 @@ The project currently uses DynamoDB, with a **Primary Index (Number)** of `encou
 Got a DynamoDB table set up? Got a PushBullet API key and Channel? Set up your secondary Pokemon account? Great! Throw all of that into `config.js` and type the magic words:
 `npm run start`
 
+For best results, use an additional tool like PM2, forever, or nodemon. There's currently a known issue with the AWS SDK throwing errors on timeout.
 
 ## Changelog
  - 2.0
