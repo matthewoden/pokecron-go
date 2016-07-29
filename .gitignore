@@ -1,2 +1,25 @@
-.DS_Store
+# OS X
+.DS_Store*
+Icon?
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+*~
+
+# npm
+npm-debug.log*
 /node_modules/
+*.log
+*.gz
+
+# IntelliJ
+.idea
+.idea_modules
+*.iml
+*.ipr
