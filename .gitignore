@@ -26,3 +26,6 @@ npm-debug.log*
 .idea_modules
 *.iml
 *.ipr
+
+#datastores
+/store/*.db

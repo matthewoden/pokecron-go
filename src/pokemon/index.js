@@ -2,12 +2,7 @@
 const api = require('pokemon-go-api');
 const _ = require('lodash')
 const moment = require('moment')
-
-const { pokedex } = require('./pokelist.json')
-// const { pokemon } = require('../config')
-// const { username, password, provider } = pokemon
-
-const longToInt = (long) => parseInt(long.toString(), 10)
+const { pokedex } = require('./pokedex.json')
 
 const getDirections = (destination) =>
     `https://www.google.com/maps/dir/Current+Location/${destination.latitude},${destination.longitude}?dirflg=w`
@@ -30,7 +25,7 @@ const mapPokemonData = (pokemon) => {
   const expires = getSafeExpiration(time_till_hidden_ms)
 
   return {
-    encounter_id: longToInt(encounter_id),
+    encounter_id: encounter_id.toString(),
     latitude,
     longitude,
     expires,
@@ -38,9 +33,6 @@ const mapPokemonData = (pokemon) => {
     expiresString: moment(expires).fromNow()
   }
 }
-
-
-
 
 module.exports = function (config) {
   const uselessPokemon = config.filter

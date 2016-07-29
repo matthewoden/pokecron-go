@@ -3,11 +3,9 @@ module.exports = {
     latitude: parseFloat(process.env.POKEMON_LAT),
     longitude: parseFloat(process.env.POKEMON_LONG),
   },
-  aws: {
-    accessKeyId:process.env.POKEMON_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.POKEMON_AWS_SECRET_ACCESS_KEY,
-    region: process.env.POKEMON_AWS_REGION,
-    table: process.env.POKEMON_AWS_DYNAMO_TABLE_DEV
+  db: {
+    datastore: process.env.POKEMON_DATASTORE,
+    memoryOnly: false
   },
   pokemon: {
     username: process.env.POKEMON_USER,
