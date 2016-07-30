@@ -2,28 +2,34 @@ const _ = require('lodash')
 const PushbulletClient = require('./pushbullet');
 const PokemonClient = require('./pokemon');
 const DatabaseClient = require('./db');
-const random = require('./random')
+const { logger, handleError } = require('./logger')
 
 const filterPokemon = ([currentPokemon, nearbyPokemon]) => {
   const remainingPokemon = _.intersectionBy(nearbyPokemon, currentPokemon, 'encounter_id')
   const expiredPokemon = _.differenceBy(currentPokemon, remainingPokemon,'encounter_id')
   const newPokemon = _.differenceBy(nearbyPokemon, remainingPokemon, 'encounter_id')
+
+  logger.log('debug', 'NEARBY', nearbyPokemon)
+  logger.log('debug', 'KNOWN', currentPokemon)
+  logger.log('debug', 'KNOWN (REMAINING)', newPokemon)
+  logger.log('debug', 'EXPIRED', newPokemon)
+  logger.log('debug', 'NEW', newPokemon)
+
   return { newPokemon, expiredPokemon }
 }
 
-module.exports = (config) => {
+
+module.exports = function (config) {
   // initialize
-  const pokemonClient = new PokemonClient(config.pokemon)
-  const databaseClient = new DatabaseClient(config.db)
-  const pushbulletClient = new PushbulletClient(config.notifications.pushbullet);
+  const pokemonClient = PokemonClient(config.pokemon)
+  const databaseClient = DatabaseClient(config.db)
+  const pushbulletClient = PushbulletClient(config.notifications.pushbullet);
 
-  // TODO: Investigate Issue: AWS-SDK lets a ETIMEDOUT slip through without returning an error in the callback.
-  // For now, wrapping in try/catch.
+  return function () {
+    logger.info('info', `Running at ${new Date().toString()}`)
+    logger.log('info', `Simulating Login at ${JSON.stringify(config.location)}`)
 
-  try {
-    console.log(`Running at ${new Date().toString()}`)
-    console.log(`Simulating Login at ${JSON.stringify(config.location)}`)
-    return Promise
+    Promise
       .all([
         databaseClient.getCurrent(),
         pokemonClient.getNearbyPokemon(config.location)
@@ -36,15 +42,9 @@ module.exports = (config) => {
         return Promise.all(notifications.concat(databaseUpdates))
       })
       .then((result) => {
-        console.log(`Completed at ${new Date().toString()}`)
-        console.log(`Result: ${result.join('\n')}`)
+        logger.log('info', `Completed at ${new Date().toString()}`)
+        logger.log('info', `Result: ${result.join('\n') || 'No updates \n'}`)
       })
-      .catch((err) => {
-        console.log(`Error at ${new Date().toString()}`)
-        console.log(`Result: ${err}\n${err.stack}`)
-      })
-  } catch (e) {
-    console.log(`Error at ${new Date().toString()}`)
-    console.log(`Result: ${e}\n${e.stack}`)
+      .catch(handleError)
   }
 }

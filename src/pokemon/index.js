@@ -59,6 +59,6 @@ module.exports = function (config) {
         .then(reducePokemon)
 
   return {
-    getNearbyPokemon
+    getNearbyPokemon, keepUseful, reducePokemon
   }
 }

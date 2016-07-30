@@ -1,6 +1,9 @@
-# PokeCron GO (node) v2.1.0
+# PokeCron GO (node) v2.2.0
 
 PokeCron is an example of pinging the pokemon go server, and triggering a notification service (pushbullet) about new nearby pokemon, complete with walking directions. New updates include filtering.
+
+## Requirements
+Node 6
 
 ## Why?
 Passive play. I could run the app on my phone all day, but this uses less of my data plan. This can check pokemon at work, at home, near an outing I plan to be at later, etc.
@@ -13,7 +16,7 @@ With PushBullet, I can choose to mute it when I'm busy, and activate it when I'm
 Yes.
 
 ## Configuration
-Every instance of PokeCron Go requires a config file. By default, it uses config.js. You'll want to either set environment variables, or replace the values provided.
+Every instance of PokeCron Go requires a config file (for running a tracker on more than one location, see "Tracking Multiple Locations" below). By default, it uses config.js. You'll want to either set environment variables, or replace the values provided.
 
 Currently, the only option not in configuration is the cron expression.
 
@@ -63,8 +66,43 @@ module.exports = {
 Got a PushBullet API key and Channel? Set up your secondary Pokemon account? Great! Throw all of that into `config.js` and type the magic words:
 `npm run start`
 
+For best results, run with a process monitor, such as `pm2`, `forever`, or `nodemon`.
+
+## Tracking Multiple locations
+Each instance needs it's own config file, and must be constructed separately.
+
+Example cron setup for work, home, and a nearby park.
+```javascript
+const cron = require('node-cron')
+const configOffice = require('./configOffice')
+const configHome = require('./configHome')
+const configPark = require('./configPark')
+const Tracker = require('./src/main')
+
+// don't miss a beat at home.
+const home = new Tracker(configHome)
+const homeTask = cron.schedule('0,30 * 17-22 * * *',home, false)
+homeTask.start()
+
+// grab those cubicle-dwelling Pokemon.
+const office = new Tracker(configOffice)
+const officeTask = cron.schedule('0,30 * 9-17 * * MON-FRI',office, false)
+officeTask.start()
+
+// It's the weekend, go outside!
+const park = new Tracker(configPark)
+const parkTask = cron.schedule('0,30 * 9-17 * * SAT-SUN',park, false)
+parkTask.start()
+```
+
+While there are no hard and fast rules for how many times you can ping the server, or how often, but I'd be wary of hitting the API faster than 4 times per minute, per account.
+
+---
 
 ## Changelog
+ - 2.2
+  - Added winston logging.
+  - Made main method a constructor, to preserve instances (and stop repeating pokemon).
  - 2.1
   - Replaced AWS DynamoDB with nedb
  - 2.0
@@ -74,7 +112,10 @@ Got a PushBullet API key and Channel? Set up your secondary Pokemon account? Gre
   - Removal any use of process.env outside config file.
   - expanded `.gitignore`
 
+---
+
 ## Roadmap
- - Remove AWS DB, in favor of something memory/file based storage.
  - Write Tests. It's all functional you big dummy, this should be easy.
  - Electron UI?
+ - Slack updates?
+ - Cron Expression in config.

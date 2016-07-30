@@ -1,0 +1,5 @@
+--recursive
+--colors
+--full-trace
+--reporter list
+--require test/setup
