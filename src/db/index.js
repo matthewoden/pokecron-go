@@ -28,7 +28,7 @@ module.exports = function (config) {
     .then(([added, removed]) => {
         const addedMessage = added.length > 0 ? `Added ${added.length} pokemon: ${additions.map((a) => a.name)}` : ''
         const removedMessage = removed.length > 0 ? `Removed ${removed.length} pokemon: ${removals.map((r) => r.name)}` : ''
-        return [additionsMessage,removalsMessage].join('\n')
+        return [addedMessage,removedMessage].join('\n')
       })
   }
 
